@@ -34,7 +34,7 @@ export default function Home() {
               Cancle
             </Typography>
           </Button>
-          <Button variant="contained" sx={{ rderColor: '#FF5C00', backgroundColor: '#FF5C00', Color: 'White', py: '13px', px: 9 }}>
+          <Button variant="contained" sx={{ borderColor: '#FF5C00', backgroundColor: '#FF5C00', Color: 'White', py: '13px', px: 9 }}>
             <Typography>
               Save
             </Typography>
