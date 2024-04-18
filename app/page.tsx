@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react';
-
 import {
   Box,
   Typography,
@@ -16,12 +15,23 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { funcChoice } from "./funcChoice";
 
 export default function Home() {
-  const { choices, questions, handleChoiceChange, handleQuestionChange, addChoice, removeChoice, addQuestion, removeQuestion, duplicateQuestion } = funcChoice();
+  const {
+    questions,
+    name,
 
+    handleChoiceChange,
+    handleQuestionChange,
+    handleNameChange,
+    addChoice,
+    removeChoice,
+    addQuestion,
+    removeQuestion,
+    duplicateQuestion,
+    validate,
+  } = funcChoice();
 
   return (
     <>
-      {/* --------------------------------headder-------------------------------------- */}
       <Box sx={{ backgroundColor: 'white' }}>
         <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
           <Typography variant="h5">
@@ -31,36 +41,42 @@ export default function Home() {
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: '12px', px: 3, gap: '12px', borderBottom: '1px solid #dddddd' }}>
           <Button variant="outlined" sx={{ borderColor: '#FF5C00', py: '13px', px: 2 }}>
             <Typography sx={{ color: '#FF5C00' }}>
-              Cancle
+              Cancel
             </Typography>
           </Button>
-          <Button variant="contained" sx={{ borderColor: '#FF5C00', backgroundColor: '#FF5C00', Color: 'White', py: '13px', px: 9 }}>
+          <Button
+            variant="contained"
+            onClick={() => validate()}
+            sx={{ borderColor: '#FF5C00', backgroundColor: '#FF5C00', color: 'White', py: '13px', px: 9 }}>
             <Typography>
               Save
             </Typography>
           </Button>
         </Box>
       </Box>
-      {/* --------------------------------Title-question-------------------------------------- */}
       <Box sx={{ m: 3, borderRadius: '10px', backgroundColor: 'white', boxShadow: '50px' }}>
         <Box>
           <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
             <Typography variant="h6" sx={{ mb: 3 }}>Questionnaire Detail</Typography>
             <TextField
+              error={name.error}
               required
               id="outlined-basic"
               label="Name"
               variant="outlined"
-              sx={{ width: '100%' }} />
+              sx={{ width: '100%' }}
+              value={name.value}
+              onChange={(e) => handleNameChange(e.target.value)} />
+
           </Box>
         </Box>
-        {/* --------------------------------Question-------------------------------------- */}
         <Box sx={{ px: 3, py: 3 }}>
           {questions.map(question => (
-            <Box sx={{ display: "flex", flexDirection: 'column', gap: 3 }}>
+            <Box key={question.id} sx={{ display: "flex", flexDirection: 'column', gap: 3 }}>
               <Typography variant="h6">Question {question.id}</Typography>
               <TextField
                 required
+                error={question.error}
                 id="outlined-basic"
                 label="Question"
                 variant="outlined"
@@ -68,29 +84,33 @@ export default function Home() {
                 value={question.description}
                 onChange={(e) => handleQuestionChange(question.id, e.target.value)}
               />
-              <RadioGroup name="use-radio-group" sx={{ gap: 3 }}>
-                {choices.map(choice => (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <FormControlLabel value={choice.id} control={<Radio />} label="" />
+              <RadioGroup name={`use-radio-group-${question.id}`} sx={{ gap: 3 }}>
+                {question.choices.map(choice => (
+                  <Box key={choice.id} sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+
+                    <FormControlLabel
+                      value={choice.id.toString()}
+                      control={<Radio />}
+                      label=""
+                    />
+
                     <TextField
                       required
-                      id="outlined-basic"
+                      error={choice.error}
+                      id={`outlined-basic-${question.id}-${choice.id}`}
                       label="Description"
                       variant="outlined"
                       value={choice.description}
-                      onChange={(e) => handleChoiceChange(choice.id, e.target.value)}
+                      onChange={(e) => handleChoiceChange(question.id, choice.id, e.target.value)}
                       sx={{ width: '100%' }} />
-                    <Button sx={{ color: 'black', px: 0 }} onClick={() => removeChoice(choice.id)}>
+                    <Button sx={{ color: 'black', px: 0 }} onClick={() => removeChoice(question.id, choice.id)}>
                       <DeleteOutlineIcon />
                     </Button>
                   </Box>
                 ))}
               </RadioGroup>
-              <Box sx={{
-                borderBottom: '1px solid #dddddd',
-                pb: 3
-              }}>
-                <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'tranparent', Color: 'White' }} onClick={addChoice}>
+              <Box sx={{ borderBottom: '1px solid #dddddd', pb: 3 }}>
+                <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'transparent', color: 'White' }} onClick={() => addChoice(question.id)}>
                   <Typography sx={{ color: '#FF5C00' }}>
                     + ADD CHOICE
                   </Typography>
@@ -114,11 +134,10 @@ export default function Home() {
                   </Box>
                 </Button>
               </Box>
-            </Box >
+            </Box>
           ))}
         </Box>
-        {/* --------------------------------Add-QUESTION-------------------------------------- */}
-        <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'tranparent', Color: 'White', width: '100%', py: '13px', border: '1px solid #FF5C00' }} onClick={addQuestion}>
+        <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'transparent', color: 'White', width: '100%', py: '13px', border: '1px solid #FF5C00' }} onClick={addQuestion}>
           <Typography sx={{ color: '#FF5C00' }}>
             + ADD QUESTION
           </Typography>
