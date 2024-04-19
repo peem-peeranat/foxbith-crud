@@ -132,7 +132,7 @@ export const funcChoice = () => {
       const newQuestion = {
         ...questionDuplicate,
         id: questions.length + 1,
-        choices: questionDuplicate.choices.map(choice => ({ ...choice, selected: choice.selected })) // สร้างคำตอบใหม่โดยให้ค่า selected เป็นเหมือนกับคำตอบในคำถามเดิม
+        choices: questionDuplicate.choices.map(choice => ({ ...choice, selected: choice.selected }))
       };
       setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
     }
