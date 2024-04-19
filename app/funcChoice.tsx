@@ -4,6 +4,7 @@ export interface Choice {
   value: string;
   description: string;
   error: boolean;
+  selected: boolean;
 }
 export interface Question {
   id: number;
@@ -18,11 +19,7 @@ export interface Name {
 }
 
 export const funcChoice = () => {
-
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-
   const [name, setName] = useState<Name>({ value: '', error: false });
-
 
   const handleNameChange = (value: string) => {
     setName({ value: value, error: false });
@@ -35,21 +32,23 @@ export const funcChoice = () => {
       description: '',
       error: false,
       choices: [
-        { id: 1, value: '', description: '', error: false },
-        { id: 2, value: '', description: '', error: false }
+        { id: 1, value: '', description: '', error: false, selected: false },
+        { id: 2, value: '', description: '', error: false, selected: false }
       ]
     },
   ]);
 
-  const handleChoiceChange = (questionId: number, choiceId: number, value: string) => {
+  const handleChoiceChange = (questionId: number, choiceId: number, description: string, selected: boolean) => {
     setQuestions(prevQuestions =>
       prevQuestions.map(question =>
         question.id === questionId
           ? {
             ...question,
-            choices: question.choices.map(choice =>
-              choice.id === choiceId ? { ...choice, description: value } : choice
-            )
+            choices: question.choices.map(choice => ({
+              ...choice,
+              selected: choice.id === choiceId ? selected : false,
+              description: choice.id === choiceId ? description : choice.description
+            }))
           }
           : question
       )
@@ -64,7 +63,7 @@ export const funcChoice = () => {
             ...question,
             choices: [
               ...question.choices,
-              { id: question.choices.length + 1, value: '', description: '', error: false }
+              { id: question.choices.length + 1, value: '', description: '', error: false, selected: false }
             ]
           }
           : question
@@ -93,7 +92,7 @@ export const funcChoice = () => {
     );
   };
 
-  const validate = () => {
+  const Save = () => {
     const updatedQuestions = questions.map(question => {
       let questionError = question.description.trim() === '';
       const updatedChoices = question.choices.map(choice => {
@@ -120,8 +119,8 @@ export const funcChoice = () => {
       description: '',
       error: false,
       choices: [
-        { id: 1, value: '', description: '', error: false },
-        { id: 2, value: '', description: '', error: false }
+        { id: 1, value: '', description: '', error: false, selected: false },
+        { id: 2, value: '', description: '', error: false, selected: false }
       ]
     };
     setQuestions([...questions, newQuestion]);
@@ -130,10 +129,16 @@ export const funcChoice = () => {
   const duplicateQuestion = (id: number) => {
     const questionDuplicate = questions.find(question => question.id === id);
     if (questionDuplicate) {
-      const newQuestion = { ...questionDuplicate, id: questions.length + 1 };
+      const newQuestion = {
+        ...questionDuplicate,
+        id: questions.length + 1,
+        choices: questionDuplicate.choices.map(choice => ({ ...choice, selected: choice.selected })) // สร้างคำตอบใหม่โดยให้ค่า selected เป็นเหมือนกับคำตอบในคำถามเดิม
+      };
       setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
     }
   };
+
+
 
   const removeQuestion = (id: number) => {
     setQuestions(prevQuestions => {
@@ -142,6 +147,21 @@ export const funcChoice = () => {
     });
   };
 
+  const resetCancle = () => {
+    setName({ value: '', error: false });
+    setQuestions([
+      {
+        id: 1,
+        value: '',
+        description: '',
+        error: false,
+        choices: [
+          { id: 1, value: '', description: '', error: false, selected: false },
+          { id: 2, value: '', description: '', error: false, selected: false }
+        ]
+      }
+    ]);
+  };
 
   return {
     questions,
@@ -154,7 +174,8 @@ export const funcChoice = () => {
     addQuestion,
     removeQuestion,
     duplicateQuestion,
-    validate,
+    Save,
+    resetCancle
 
   };
 };

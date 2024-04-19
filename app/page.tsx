@@ -1,6 +1,5 @@
 "use client"
 
-import React from 'react';
 import {
   Box,
   Typography,
@@ -13,12 +12,11 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { funcChoice } from "./funcChoice";
-
+import useStyle from './page.style'
 export default function Home() {
   const {
     questions,
     name,
-
     handleChoiceChange,
     handleQuestionChange,
     handleNameChange,
@@ -27,106 +25,130 @@ export default function Home() {
     addQuestion,
     removeQuestion,
     duplicateQuestion,
-    validate,
+    Save,
+    resetCancle
   } = funcChoice();
 
+  const { classes } = useStyle()
   return (
     <>
-      <Box sx={{ backgroundColor: 'white' }}>
-        <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
+      <Box className={classes.background}>
+        <Box className={classes.wrapperFoxbithQuestionnaire}>
           <Typography variant="h5">
             🦊 Foxbith Questionnaire
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: '12px', px: 3, gap: '12px', borderBottom: '1px solid #dddddd' }}>
-          <Button variant="outlined" sx={{ borderColor: '#FF5C00', py: '13px', px: 2 }}>
-            <Typography sx={{ color: '#FF5C00' }}>
+        <Box className={classes.warapperButtonSaveAndCancel}>
+          <Button variant="outlined" className={classes.styleWrapperButtonCancel} onClick={resetCancle}>
+            <Typography >
               Cancel
             </Typography>
           </Button>
           <Button
             variant="contained"
-            onClick={() => validate()}
-            sx={{ borderColor: '#FF5C00', backgroundColor: '#FF5C00', color: 'White', py: '13px', px: 9 }}>
+            onClick={() => Save()}
+            className={classes.styleWrapperButtonSave}>
             <Typography>
               Save
             </Typography>
           </Button>
         </Box>
       </Box>
-      <Box sx={{ m: 3, borderRadius: '10px', backgroundColor: 'white', boxShadow: '50px' }}>
+      <Box className={classes.wrapperContent}>
         <Box>
-          <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Questionnaire Detail</Typography>
+          <Box className={classes.wrapperQuestionnaireDetail}>
+            <Typography
+              variant="h6"
+              className={classes.styleQuestionnaireDetail}>
+              Questionnaire Detail
+            </Typography>
             <TextField
               error={name.error}
+              helperText={name.error ? "Please fill in this option." : ""}
               required
               id="outlined-basic"
               label="Name"
               variant="outlined"
-              sx={{ width: '100%' }}
+              className={classes.styleTextFieldQuestion}
               value={name.value}
-              onChange={(e) => handleNameChange(e.target.value)} />
+              onChange={(e) => handleNameChange(e.target.value)}
+              FormHelperTextProps={{
+                style: {
+                  marginLeft: 0,
+                },
+              }}
+            />
 
           </Box>
         </Box>
-        <Box sx={{ px: 3, py: 3 }}>
+        <Box className={classes.styleWrapperBoxContent}>
           {questions.map(question => (
-            <Box key={question.id} sx={{ display: "flex", flexDirection: 'column', gap: 3 }}>
+            <Box key={question.id} className={classes.wrapperBoxContent}>
               <Typography variant="h6">Question {question.id}</Typography>
               <TextField
                 required
                 error={question.error}
+                helperText={question.error ? "Please fill in this option." : ""}
                 id="outlined-basic"
                 label="Question"
                 variant="outlined"
-                sx={{ width: '100%' }}
+                className={classes.styleTextFieldQuestion}
                 value={question.description}
                 onChange={(e) => handleQuestionChange(question.id, e.target.value)}
+                FormHelperTextProps={{
+                  style: {
+                    marginLeft: 0,
+                  },
+                }}
               />
-              <RadioGroup name={`use-radio-group-${question.id}`} sx={{ gap: 3 }}>
+              <RadioGroup className={classes.styleRadioGroup}>
                 {question.choices.map(choice => (
-                  <Box key={choice.id} sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-
+                  <Box className={classes.warapperBoxContent}>
                     <FormControlLabel
                       value={choice.id.toString()}
-                      control={<Radio />}
+                      control={<Radio checked={choice.selected} onChange={(e) => handleChoiceChange(question.id, choice.id, choice.description, e.target.checked)} />}
                       label=""
                     />
-
                     <TextField
                       required
                       error={choice.error}
-                      id={`outlined-basic-${question.id}-${choice.id}`}
+                      helperText={choice.selected ? "This answer is correct" : (choice.error ? "Please fill in this option." : "")}
                       label="Description"
                       variant="outlined"
                       value={choice.description}
-                      onChange={(e) => handleChoiceChange(question.id, choice.id, e.target.value)}
-                      sx={{ width: '100%' }} />
-                    <Button sx={{ color: 'black', px: 0 }} onClick={() => removeChoice(question.id, choice.id)}>
+                      onChange={(e) => handleChoiceChange(question.id, choice.id, e.target.value, choice.selected)}
+                      className={classes.styleTextFieldQuestion}
+                      FormHelperTextProps={{
+                        style: {
+                          marginLeft: 0,
+                        },
+                      }}
+                    />
+                    <Button className={classes.styleButtonDelete} onClick={() => removeChoice(question.id, choice.id)}>
                       <DeleteOutlineIcon />
                     </Button>
                   </Box>
                 ))}
+
               </RadioGroup>
-              <Box sx={{ borderBottom: '1px solid #dddddd', pb: 3 }}>
-                <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'transparent', color: 'White' }} onClick={() => addChoice(question.id)}>
-                  <Typography sx={{ color: '#FF5C00' }}>
+              <Box className={classes.wrapperAddChoice}>
+                <Button className={classes.styleButtonAddChoice} onClick={() => addChoice(question.id)}>
+                  <Typography className={classes.styleButtonAddChoiceText}>
                     + ADD CHOICE
                   </Typography>
                 </Button>
               </Box>
-              <Box sx={{ display: 'flex' }}>
-                <Button sx={{ color: 'black' }} onClick={() => duplicateQuestion(question.id)}>
-                  <Box sx={{ display: 'flex', pr: 3, gap: 1 }}>
+              <Box className={classes.warpperButtonDuplicateAndDelete}>
+                <Button className={classes.styleButtondDuplicateAndDelete} onClick={() => duplicateQuestion(question.id)}>
+                  <Box className={classes.warpperBoxDuplicateAndDelete}>
                     <ContentCopyIcon />
                     <Typography >
                       Duplicate
                     </Typography>
                   </Box>
                 </Button>
-                <Button sx={{ color: 'black' }} onClick={() => removeQuestion(question.id)}>
-                  <Box sx={{ display: 'flex', pr: 3, gap: 1 }}>
+                <Button className={classes.styleButtondDuplicateAndDelete} onClick={() => removeQuestion(question.id)}>
+                  <Box className={classes.warpperBoxDuplicateAndDelete}>
                     <DeleteOutlineIcon />
                     <Typography >
                       Delete
@@ -137,11 +159,13 @@ export default function Home() {
             </Box>
           ))}
         </Box>
-        <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'transparent', color: 'White', width: '100%', py: '13px', border: '1px solid #FF5C00' }} onClick={addQuestion}>
-          <Typography sx={{ color: '#FF5C00' }}>
-            + ADD QUESTION
-          </Typography>
-        </Button>
+        <Box className={classes.wrapperStyleButtonAddQuestion}>
+          <Button className={classes.styleButtonAddQuestion} onClick={addQuestion}>
+            <Typography className={classes.styleTextAddQuestion}>
+              + ADD QUESTION
+            </Typography>
+          </Button>
+        </Box>
       </Box>
     </>
   )
