@@ -1,111 +1,171 @@
-// import styles from "./page.module.css";
+"use client"
+
 import {
   Box,
   Typography,
   Button,
   TextField,
-  Container,
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormControl,
-  FormLabel
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-
+import { funcChoice } from "./funcChoice";
+import useStyle from './page.style'
 export default function Home() {
+  const {
+    questions,
+    name,
+    handleChoiceChange,
+    handleQuestionChange,
+    handleNameChange,
+    addChoice,
+    removeChoice,
+    addQuestion,
+    removeQuestion,
+    duplicateQuestion,
+    Save,
+    resetCancle
+  } = funcChoice();
+
+  const { classes } = useStyle()
   return (
     <>
-      {/* --------------------------------headder-------------------------------------- */}
-      <Box sx={{ backgroundColor: 'white' }}>
-        <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
+      <Box className={classes.background}>
+        <Box className={classes.wrapperFoxbithQuestionnaire}>
           <Typography variant="h5">
             🦊 Foxbith Questionnaire
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: '12px', px: 3, gap: '12px', borderBottom: '1px solid #dddddd' }}>
-          <Button variant="outlined" sx={{ borderColor: '#FF5C00', py: '13px', px: 2 }}>
-            <Typography sx={{ color: '#FF5C00' }}>
-              Cancle
+        <Box className={classes.warapperButtonSaveAndCancel}>
+          <Button variant="outlined" className={classes.styleWrapperButtonCancel} onClick={resetCancle}>
+            <Typography >
+              Cancel
             </Typography>
           </Button>
-          <Button variant="contained" sx={{ borderColor: '#FF5C00', backgroundColor: '#FF5C00', Color: 'White', py: '13px', px: 9 }}>
+          <Button
+            variant="contained"
+            onClick={() => Save()}
+            className={classes.styleWrapperButtonSave}>
             <Typography>
               Save
             </Typography>
           </Button>
         </Box>
       </Box>
-      {/* --------------------------------headder-------------------------------------- */}
-
-      <Box sx={{ m: 3, borderRadius: '10px', backgroundColor: 'white', boxShadow: '50px' }}>
+      <Box className={classes.wrapperContent}>
         <Box>
-          <Box sx={{ py: 3, px: 3, borderBottom: '1px solid #dddddd' }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Questionnaire Detail</Typography>
-            <TextField id="outlined-basic" label="Name" variant="outlined" sx={{ width: '100%' }} />
+          <Box className={classes.wrapperQuestionnaireDetail}>
+            <Typography
+              variant="h6"
+              className={classes.styleQuestionnaireDetail}>
+              Questionnaire Detail
+            </Typography>
+            <TextField
+              error={name.error}
+              helperText={name.error ? "Please fill in this option." : ""}
+              required
+              id="outlined-basic"
+              label="Name"
+              variant="outlined"
+              className={classes.styleTextFieldQuestion}
+              value={name.value}
+              onChange={(e) => handleNameChange(e.target.value)}
+              FormHelperTextProps={{
+                style: {
+                  marginLeft: 0,
+                },
+              }}
+            />
+
           </Box>
         </Box>
+        <Box className={classes.styleWrapperBoxContent}>
+          {questions.map(question => (
+            <Box key={question.id} className={classes.wrapperBoxContent}>
+              <Typography variant="h6">Question {question.id}</Typography>
+              <TextField
+                required
+                error={question.error}
+                helperText={question.error ? "Please fill in this option." : ""}
+                id="outlined-basic"
+                label="Question"
+                variant="outlined"
+                className={classes.styleTextFieldQuestion}
+                value={question.description}
+                onChange={(e) => handleQuestionChange(question.id, e.target.value)}
+                FormHelperTextProps={{
+                  style: {
+                    marginLeft: 0,
+                  },
+                }}
+              />
+              <RadioGroup className={classes.styleRadioGroup}>
+                {question.choices.map(choice => (
+                  <Box className={classes.warapperBoxContent}>
+                    <FormControlLabel
+                      value={choice.id.toString()}
+                      control={<Radio checked={choice.selected} onChange={(e) => handleChoiceChange(question.id, choice.id, choice.description, e.target.checked)} />}
+                      label=""
+                    />
+                    <TextField
+                      required
+                      error={choice.error}
+                      helperText={choice.selected ? "This answer is correct" : (choice.error ? "Please fill in this option." : "")}
+                      label="Description"
+                      variant="outlined"
+                      value={choice.description}
+                      onChange={(e) => handleChoiceChange(question.id, choice.id, e.target.value, choice.selected)}
+                      className={classes.styleTextFieldQuestion}
+                      FormHelperTextProps={{
+                        style: {
+                          marginLeft: 0,
+                        },
+                      }}
+                    />
+                    <Button className={classes.styleButtonDelete} onClick={() => removeChoice(question.id, choice.id)}>
+                      <DeleteOutlineIcon />
+                    </Button>
+                  </Box>
+                ))}
 
-        {/* --------------------------------Questionnaire-------------------------------------- */}
-        <Box sx={{ px: 3, py: 3 }}>
-          <Box sx={{ display: "flex", flexDirection: 'column', gap: 3 }}>
-            <Typography variant="h6">Question 1</Typography>
-            <TextField id="outlined-basic" label="Question" variant="outlined" sx={{ width: '100%' }} />
-
-            <RadioGroup name="use-radio-group" sx={{ gap: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                <FormControlLabel value="female" control={<Radio />} label="" />
-                <TextField id="outlined-basic" label="Description *" variant="outlined" sx={{ width: '100%' }} />
-                <Button sx={{ color: 'black', px: 0 }}>
-                  <DeleteOutlineIcon />
+              </RadioGroup>
+              <Box className={classes.wrapperAddChoice}>
+                <Button className={classes.styleButtonAddChoice} onClick={() => addChoice(question.id)}>
+                  <Typography className={classes.styleButtonAddChoiceText}>
+                    + ADD CHOICE
+                  </Typography>
                 </Button>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                <FormControlLabel value="male" control={<Radio />} label="" />
-                <TextField id="outlined-basic" label="Description *" variant="outlined" sx={{ width: '100%' }} />
-                <Button sx={{ color: 'black', px: 0 }}>
-                  <DeleteOutlineIcon />
+              <Box className={classes.warpperButtonDuplicateAndDelete}>
+                <Button className={classes.styleButtondDuplicateAndDelete} onClick={() => duplicateQuestion(question.id)}>
+                  <Box className={classes.warpperBoxDuplicateAndDelete}>
+                    <ContentCopyIcon />
+                    <Typography >
+                      Duplicate
+                    </Typography>
+                  </Box>
+                </Button>
+                <Button className={classes.styleButtondDuplicateAndDelete} onClick={() => removeQuestion(question.id)}>
+                  <Box className={classes.warpperBoxDuplicateAndDelete}>
+                    <DeleteOutlineIcon />
+                    <Typography >
+                      Delete
+                    </Typography>
+                  </Box>
                 </Button>
               </Box>
-            </RadioGroup>
-
-            <Box sx={{
-              borderBottom: '1px solid #dddddd',
-              pb: 3
-            }}>
-              <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'tranparent', Color: 'White' }}>
-                <Typography sx={{ color: '#FF5C00' }}>
-                  + ADD CHOICE
-                </Typography>
-              </Button>
             </Box>
-            <Box sx={{ display: 'flex' }}>
-              <Button sx={{ color: 'black' }}>
-                <Box sx={{ display: 'flex', pr: 3, gap: 1 }}>
-                  <ContentCopyIcon />
-                  <Typography >
-                    Duplicate
-                  </Typography>
-                </Box>
-              </Button>
-              <Button sx={{ color: 'black' }}>
-                <Box sx={{ display: 'flex', pr: 3, gap: 1 }}>
-                  <DeleteOutlineIcon />
-                  <Typography >
-                    Delete
-                  </Typography>
-                </Box>
-              </Button>
-            </Box>
-          </Box >
+          ))}
         </Box>
-        {/* --------------------------------Questionnaire-------------------------------------- */}
-        <Button sx={{ borderColor: '#FF5C00', backgroundColor: 'tranparent', Color: 'White', width: '100%', py: '13px', border: '1px solid #FF5C00' }}>
-          <Typography sx={{ color: '#FF5C00' }}>
-            + ADD QUESTION
-          </Typography>
-        </Button>
+        <Box className={classes.wrapperStyleButtonAddQuestion}>
+          <Button className={classes.styleButtonAddQuestion} onClick={addQuestion}>
+            <Typography className={classes.styleTextAddQuestion}>
+              + ADD QUESTION
+            </Typography>
+          </Button>
+        </Box>
       </Box>
     </>
   )
