@@ -109,7 +109,11 @@ export const funcChoice = () => {
     setQuestions(updatedQuestions);
 
     const nameError = name.value.trim() === '';
-    setName(prevName => ({ ...prevName, error: nameError }));
+    if (nameError) {
+      setName(prevName => ({ ...prevName, error: true }));
+    } else {
+      setName(prevName => ({ ...prevName, error: false }));
+    }
   };
 
   const addQuestion = () => {
