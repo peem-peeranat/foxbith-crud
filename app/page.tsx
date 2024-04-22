@@ -66,7 +66,6 @@ export default function Home() {
               error={name.error}
               helperText={name.error ? "Please fill in this option." : ""}
               required
-              id="outlined-basic"
               label="Name"
               variant="outlined"
               className={classes.styleTextFieldQuestion}
@@ -89,8 +88,6 @@ export default function Home() {
                 required
                 error={question.error}
                 helperText={question.error ? "Please fill in this option." : ""}
-                id="outlined-basic"
-                label="Question"
                 variant="outlined"
                 className={classes.styleTextFieldQuestion}
                 value={question.description}
@@ -103,7 +100,7 @@ export default function Home() {
               />
               <RadioGroup className={classes.styleRadioGroup}>
                 {question.choices.map(choice => (
-                  <Box className={classes.warapperBoxContent}>
+                  <Box key={question.id} className={classes.warapperBoxContent}>
                     <FormControlLabel
                       value={choice.id.toString()}
                       control={<Radio checked={choice.selected} onChange={(e) => handleChoiceChange(question.id, choice.id, choice.description, e.target.checked)} />}
